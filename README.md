@@ -79,7 +79,7 @@
 10. **Build the Project**
     - Switch the build configuration to **Release**.
     - Build the project by selecting **Build** > **Build Solution**.
-## Export model to run model in sunone_aimbot_cpp:
+## Export model to run model in RZCTL-AI-Aimbot:
 - Export model to onnx format with dynamic shape:
 	```bash
 	yolo export model=best.pt format=onnx dynamic=true simplify=true
