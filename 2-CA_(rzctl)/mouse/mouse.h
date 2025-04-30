@@ -102,6 +102,40 @@ public:
     void storeFuturePositions(const std::vector<std::pair<double, double>>& positions);
     void clearFuturePositions();
     std::vector<std::pair<double, double>> getFuturePositions();
+
+    // New getter/setter methods
+    void setTargetDetected(bool detected) { target_detected.store(detected); }
+    bool getTargetDetected() const { return target_detected.load(); }
+    
+    void setLastTargetTime(const std::chrono::steady_clock::time_point& t) { last_target_time = t; }
+    std::chrono::steady_clock::time_point getLastTargetTime() const { return last_target_time; }
+    
+    void setMousePressed(bool pressed) { mouse_pressed.store(pressed); }
+    bool getMousePressed() const { return mouse_pressed.load(); }
+    
+    void setWindMouseEnabled(bool enabled) { wind_mouse_enabled = enabled; }
+    bool getWindMouseEnabled() const { return wind_mouse_enabled; }
+    
+    void setWindMouseParams(double G, double W, double M, double D) {
+        wind_G = G;
+        wind_W = W;
+        wind_M = M;
+        wind_D = D;
+    }
+    
+    std::tuple<double, double, double, double> getWindMouseParams() const {
+        return {wind_G, wind_W, wind_M, wind_D};
+    }
+    
+    void setRZControl(RZControl* newRZControl) {
+        std::lock_guard<std::mutex> lock(input_method_mutex);
+        rzctl = newRZControl;
+    }
+    
+    RZControl* getRZControl() const {
+        std::lock_guard<std::mutex> lock(input_method_mutex);
+        return rzctl;
+    }
 };
 
 #endif // MOUSE_H

@@ -166,7 +166,7 @@ void MouseThread::windMouseMoveRelative(int dx, int dy)
 
 void MouseThread::sendMovementToDriver(int dx, int dy)
 {
-    if (config.input_method == "RZCONTROL")
+    if (config.input_method == "RZCONTROL" && rzctl)
     {
         rzctl->move(dx, dy);
     }
@@ -281,7 +281,7 @@ void MouseThread::pressMouse(const AimbotTarget& target)
     bool bScope = check_target_in_scope(target.x, target.y, target.w, target.h, bScope_multiplier);
     if (bScope && !mouse_pressed)
     {
-        if (config.input_method == "RZCONTROL")
+        if (config.input_method == "RZCONTROL" && rzctl)
         {
             rzctl->press();
         }
@@ -296,7 +296,7 @@ void MouseThread::pressMouse(const AimbotTarget& target)
     }
     else if (!bScope && mouse_pressed)
     {
-        if (config.input_method == "RZCONTROL")
+        if (config.input_method == "RZCONTROL" && rzctl)
         {
             rzctl->release();
         }
@@ -317,7 +317,7 @@ void MouseThread::releaseMouse()
 
     if (mouse_pressed)
     {
-        if (config.input_method == "RZCONTROL")
+        if (config.input_method == "RZCONTROL" && rzctl)
         {
             rzctl->release();
         }
