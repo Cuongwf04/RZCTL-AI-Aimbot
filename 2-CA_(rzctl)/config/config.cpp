@@ -76,6 +76,13 @@ bool Config::loadConfig(const std::string& filename)
         easynorecoilstrength = 0.0f;
         input_method = "WIN32";
 
+        // Wind mouse
+        wind_mouse_enabled = false;
+        wind_G = 18.0f;
+        wind_W = 15.0f;
+        wind_M = 10.0f;
+        wind_D = 8.0f;
+
         // Mouse shooting
         auto_shoot = false;
         bScope_multiplier = 1.0f;
@@ -204,6 +211,13 @@ bool Config::loadConfig(const std::string& filename)
     easynorecoilstrength = (float)get_double("easynorecoilstrength", 0.0);
     input_method = get_string("input_method", "WIN32");
 
+    // Wind mouse
+    wind_mouse_enabled = get_bool("wind_mouse_enabled", false);
+    wind_G = (float)get_double("wind_G", 18.0f);
+    wind_W = (float)get_double("wind_W", 15.0f);
+    wind_M = (float)get_double("wind_M", 10.0f);
+    wind_D = (float)get_double("wind_D", 8.0f);
+
     // Mouse shooting
     auto_shoot = get_bool("auto_shoot", false);
     bScope_multiplier = (float)get_double("bScope_multiplier", 1.2);
@@ -318,6 +332,14 @@ bool Config::saveConfig(const std::string& filename)
         << "easynorecoilstrength = " << easynorecoilstrength << "\n"
         << "# WIN32, RZCONTROL\n"
         << "input_method = " << input_method << "\n\n";
+
+    // Wind mouse
+    file << "# Wind mouse\n"
+        << "wind_mouse_enabled = " << (wind_mouse_enabled ? "true" : "false") << "\n"
+        << "wind_G = " << wind_G << "\n"
+        << "wind_W = " << wind_W << "\n"
+        << "wind_M = " << wind_M << "\n"
+        << "wind_D = " << wind_D << "\n\n";
 
     // Mouse shooting
     file << "# Mouse shooting\n"

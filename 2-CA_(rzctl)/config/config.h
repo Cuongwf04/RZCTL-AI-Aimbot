@@ -3,10 +3,9 @@
 
 #include <string>
 #include <vector>
+#include <atomic>
 
-class Config
-{
-public:
+struct Config {
     // Capture
     std::string capture_method; // "duplication_api", "winrt", "virtual_camera"
     int detection_resolution;
@@ -37,6 +36,13 @@ public:
     bool easynorecoil;
     float easynorecoilstrength;
     std::string input_method; // "WIN32" or "RZCONTROL"
+
+    // Wind mouse
+    bool wind_mouse_enabled;
+    float wind_G;
+    float wind_W;
+    float wind_M;
+    float wind_D;
 
     // Mouse shooting
     bool auto_shoot;
@@ -102,6 +108,7 @@ public:
     bool always_on_top;
     bool verbose;
 
+    Config();
     bool loadConfig(const std::string& filename = "config.ini");
     bool saveConfig(const std::string& filename = "config.ini");
 
@@ -109,5 +116,15 @@ public:
 private:
     std::vector<std::string> splitString(const std::string& str, char delimiter = ',');
 };
+
+extern Config config;
+extern std::mutex configMutex;
+extern std::atomic<bool> input_method_changed;
+extern std::atomic<bool> detection_resolution_changed;
+extern std::atomic<bool> detector_model_changed;
+extern std::atomic<bool> capture_cursor_changed;
+extern std::atomic<bool> capture_borders_changed;
+extern std::atomic<bool> capture_fps_changed;
+extern std::atomic<bool> show_window_changed;
 
 #endif // CONFIG_H
