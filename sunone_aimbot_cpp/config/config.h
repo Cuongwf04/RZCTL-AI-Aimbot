@@ -35,10 +35,7 @@ public:
     float easynorecoilstrength;
     float norecoil_step;  // Step size for adjusting norecoil strength
     float norecoil_ms;    // Millisecond delay for recoil control
-    std::string input_method; // "WIN32", "GHUB", "ARDUINO", "RZCTL"
-
-    // RZCTL
-    std::string rzctl_dll_path;
+    std::string input_method = "WIN32";
 
     // Scope Recoil Control
     int active_scope_magnification; // 0=None, 2=2x, 3=3x, 4=4x, 6=6x
@@ -56,9 +53,9 @@ public:
     double kd_y;
 
     // Arduino
-    int arduino_baudrate;
-    std::string arduino_port;
-    bool arduino_16_bit_mouse;
+    int arduino_baudrate = 115200;
+    std::string arduino_port = "COM3";
+    bool arduino_16_bit_mouse = false;
     bool arduino_enable_keys;
 
     // Mouse shooting

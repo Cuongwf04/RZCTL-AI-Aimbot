@@ -140,12 +140,12 @@ public:
     }
 };
 
-// Mouse input implementation via RZCTL
-class RZCTLInputMethod : public InputMethod
+// Mouse input implementation via RZControl
+class RZControlInputMethod : public InputMethod
 {
 public:
-    explicit RZCTLInputMethod(RZControl* rzctl) : rzctl_(rzctl) {}
-    ~RZCTLInputMethod() override
+    explicit RZControlInputMethod(RZControl* rzctl) : rzctl_(rzctl) {}
+    ~RZControlInputMethod() override
     {
         // Only maintaining reference, not deleting in destructor
     }

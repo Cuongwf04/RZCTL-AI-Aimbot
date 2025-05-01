@@ -23,7 +23,6 @@
 #include "mouse/InputMethod.h"
 #include "config.h"
 #include "detector/detector.h"
-#include "rzctl.h"
 
 // Include headers for version checking
 #include <cuda_runtime_api.h>
@@ -42,7 +41,6 @@ MouseThread *globalMouseThread = nullptr;
 
 GhubMouse *gHub = nullptr;
 SerialConnection *arduinoSerial = nullptr;
-RZControl *rzctl = nullptr;
 
 std::atomic<bool> optimizing(false);
 
@@ -129,12 +127,6 @@ void initializeInputMethod()
             delete gHub;
             gHub = nullptr;
         }
-
-        if (rzctl)
-        {
-            delete rzctl;
-            rzctl = nullptr;
-        }
     }
 
     std::unique_ptr<InputMethod> input_method;
@@ -167,20 +159,26 @@ void initializeInputMethod()
     }
     else if (config.input_method == "RZCTL")
     {
-        std::cout << "[Mouse] Using RZCTL method input." << std::endl;
+        std::cout << "[Mouse] Using RZControl method input." << std::endl;
         try {
-            rzctl = new RZControl(std::wstring(config.rzctl_dll_path.begin(), config.rzctl_dll_path.end()));
+            // Get the executable's directory
+            wchar_t exe_path[MAX_PATH];
+            GetModuleFileNameW(NULL, exe_path, MAX_PATH);
+            std::wstring exe_dir = std::wstring(exe_path);
+            exe_dir = exe_dir.substr(0, exe_dir.find_last_of(L"\\/"));
+            
+            // Construct path to rzctl.dll in the same directory
+            std::wstring dll_path = exe_dir + L"\\rzctl.dll";
+            
+            RZControl* rzctl = new RZControl(dll_path);
             if (rzctl->initialize()) {
-                input_method = std::make_unique<RZCTLInputMethod>(rzctl);
+                input_method = std::make_unique<RZControlInputMethod>(rzctl);
             } else {
-                std::cerr << "[RZCTL] Failed to initialize RZCTL." << std::endl;
+                std::cerr << "[RZControl] Failed to initialize." << std::endl;
                 delete rzctl;
-                rzctl = nullptr;
             }
         } catch (const std::exception& e) {
-            std::cerr << "[RZCTL] Error: " << e.what() << std::endl;
-            delete rzctl;
-            rzctl = nullptr;
+            std::cerr << "[RZControl] Error: " << e.what() << std::endl;
         }
     }
 
