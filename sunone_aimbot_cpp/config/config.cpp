@@ -395,9 +395,6 @@ bool Config::saveConfig(const std::string& filename)
         return false;
     }
 
-    file << "# An explanation of the options can be found at:\n";
-    file << "# https://github.com/SunOner/sunone_aimbot_docs/blob/main/config/config_cpp.md\n\n";
-
     // Capture
     // ini.SetValue("", "capture_method", capture_method.c_str()); // Removed
     file << "# Capture\n"
