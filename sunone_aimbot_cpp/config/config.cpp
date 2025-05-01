@@ -95,7 +95,7 @@ bool Config::loadConfig(const std::string& filename)
 
         // PID Controller
         // kp = 0.5;
-        
+
         // Separated X/Y PID Controllers
         kp_x = 0.5;  // 초기값은 공통 값과 동일하게 설정
         ki_x = 0.0;
@@ -557,7 +557,7 @@ bool Config::saveConfig(const std::string& filename)
 std::vector<std::string> Config::listProfiles() {
     std::vector<std::string> profiles;
     std::string current_path_str = "."; // Assuming profiles are in the same directory as the executable
-    
+
     try {
         for (const auto& entry : std::filesystem::directory_iterator(current_path_str)) {
             if (entry.is_regular_file()) {
@@ -573,12 +573,12 @@ std::vector<std::string> Config::listProfiles() {
     } catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "[Config] Error listing profiles in directory '" << current_path_str << "': " << e.what() << std::endl;
     }
-    
+
     // Sort profiles alphabetically for consistency
     std::sort(profiles.begin(), profiles.end());
 
     // Optionally add a default entry if config.ini exists and you want to represent it
-    // profiles.insert(profiles.begin(), "Default"); 
+    // profiles.insert(profiles.begin(), "Default");
 
     return profiles;
 }
