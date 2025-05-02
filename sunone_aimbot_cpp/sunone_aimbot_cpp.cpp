@@ -23,6 +23,7 @@
 #include "mouse/InputMethod.h"
 #include "config.h"
 #include "detector/detector.h"
+#include "kmboxNet.h"
 
 // Include headers for version checking
 #include <cuda_runtime_api.h>
@@ -157,31 +158,31 @@ void initializeInputMethod()
             input_method = std::make_unique<GHubInputMethod>(gHub);
         }
     }
-    else if (config.input_method == "RZCTL")
+    else if (config.input_method == "KMBOX")
     {
-        std::cout << "[Mouse] Using RZControl method input." << std::endl;
-        try {
-            // Get the executable's directory
-            wchar_t exe_path[MAX_PATH];
-            GetModuleFileNameW(NULL, exe_path, MAX_PATH);
-            std::wstring exe_dir = std::wstring(exe_path);
-            exe_dir = exe_dir.substr(0, exe_dir.find_last_of(L"\\/"));
-            
-            // Construct path to rzctl.dll in the same directory
-            std::wstring dll_path = exe_dir + L"\\rzctl.dll";
-            
-            RZControl* rzctl = new RZControl(dll_path);
-            if (rzctl->initialize()) {
-                input_method = std::make_unique<RZControlInputMethod>(rzctl);
-            } else {
-                std::cerr << "[RZControl] Failed to initialize." << std::endl;
-                delete rzctl;
-            }
-        } catch (const std::exception& e) {
-            std::cerr << "[RZControl] Error: " << e.what() << std::endl;
+        std::cout << "[Mouse] Using kmboxNet method input.\n";
+        char ip[256], port[256], mac[256];
+        strncpy(ip, config.kmbox_ip.c_str(), sizeof(ip));
+        strncpy(port, config.kmbox_port.c_str(), sizeof(port));
+        strncpy(mac, config.kmbox_mac.c_str(), sizeof(mac));
+
+        // Ensure null-termination
+        ip[sizeof(ip) - 1] = '\0';
+        port[sizeof(port) - 1] = '\0';
+        mac[sizeof(mac) - 1] = '\0';
+
+        int rc = kmNet_init(ip, port, mac);
+
+        if (rc == 0)
+        {
+            input_method = std::make_unique<KmboxInputMethod>();
+        }
+        else
+        {
+            std::cerr << "[kmboxNet] init failed, code=" << rc << "\n";
         }
     }
-
+    
     if (!input_method)
     {
         std::cout << "[Mouse] Using default Win32 method input." << std::endl;
@@ -349,16 +350,37 @@ int main()
 
         if (config.input_method == "ARDUINO")
         {
-            arduinoSerial = new SerialConnection(config.arduino_port, config.arduino_baudrate);
+            try {
+                arduinoSerial = new SerialConnection(config.arduino_port, config.arduino_baudrate);
+                if (arduinoSerial->isOpen()) {
+                    std::cout << "Arduino connected on port " << config.arduino_port << "." << std::endl;
+                    
+                } else {
+                    std::cerr << "Error: Failed to open Arduino serial port " << config.arduino_port << ".";
+                    std::cerr << " Falling back to Win32 input method." << std::endl;
+                    delete arduinoSerial;
+                    arduinoSerial = nullptr;
+                    config.input_method = "WIN32"; // Fallback
+                }
+            } catch (const std::exception& e) {
+                std::cerr << "Error initializing Arduino serial connection: " << e.what() << ".";
+                std::cerr << " Falling back to Win32 input method." << std::endl;
+                if (arduinoSerial) {
+                    delete arduinoSerial;
+                    arduinoSerial = nullptr;
+                }
+                config.input_method = "WIN32"; // Fallback
+            }
         }
         else if (config.input_method == "GHUB")
         {
             gHub = new GhubMouse();
-            if (!gHub->mouse_xy(0, 0))
-            {
-                std::cerr << "[Ghub] Error with opening mouse." << std::endl;
+            if (!gHub || !gHub->mouse_xy(0, 0)) {
+                std::cerr << "Error: Failed to initialize G HUB. Check if G HUB is running.";
+                std::cerr << " Falling back to Win32 input method." << std::endl;
                 delete gHub;
                 gHub = nullptr;
+                config.input_method = "WIN32"; // Fallback
             }
         }
 

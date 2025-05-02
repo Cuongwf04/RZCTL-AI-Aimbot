@@ -295,7 +295,8 @@ void draw_mouse()
     ImGui::Spacing(); // Add spacing before Input Method settings header
     if (ImGui::CollapsingHeader("Input Method Settings", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        std::vector<std::string> input_methods = { "WIN32", "GHUB", "ARDUINO", "RZCTL" };
+        // Add "RAZER" and potentially "KMBOX" if applicable
+        std::vector<std::string> input_methods = { "WIN32", "GHUB", "ARDUINO", "RAZER", "KMBOX" }; 
         std::vector<const char*> method_items;
         method_items.reserve(input_methods.size());
         for (const auto& item : input_methods)
@@ -324,7 +325,8 @@ void draw_mouse()
                              "WIN32: Standard Windows SendInput. May be detected.\n"
                              "GHUB: Logitech G Hub driver (if installed and supported). Generally safer.\n"
                              "ARDUINO: Requires a connected Arduino board flashed with appropriate firmware.\n"
-                             "RZCTL: Uses RZControl DLL for mouse input. Requires rzctl.dll in the application directory.");
+                             "RAZER: Uses a specific Razer driver DLL (rzctl.dll). Requires DLL path.\n"
+                             "KMBOX: Uses kmBoxNet library (requires B box hardware).");
         }
 
         // Display GHUB version if GHUB method is selected or potentially usable
@@ -336,19 +338,6 @@ void draw_mouse()
                  ImGui::SameLine();
                  ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "(Not Found/Error)");
             }
-        }
-
-        // RZControl settings
-        if (config.input_method == "RZCTL")
-        {
-            ImGui::Indent(10.0f);
-            ImGui::SeparatorText("RZControl Settings");
-            ImGui::Text("Using rzctl.dll from application directory");
-            if (ImGui::IsItemHovered())
-            {
-                SetWrappedTooltip("Place rzctl.dll in the same directory as the executable.");
-            }
-            ImGui::Unindent(10.0f);
         }
 
         // Optional: Add ARDUINO COM port selection if needed
@@ -411,6 +400,22 @@ void draw_mouse()
             // }
 
             // TODO: Add other Arduino settings here if needed (Baud rate, 16-bit mouse, enable keys) <-- REMOVED
+            ImGui::Unindent(10.0f);
+        }
+
+        // Kmbox Settings (assuming kmboxNet library is integrated elsewhere)
+        if (config.input_method == "KMBOX") 
+        {
+            ImGui::Indent(10.0f);
+            ImGui::SeparatorText("Kmbox Settings");
+
+            // Example: Display connection status or allow config changes
+            // You might need functions like kmNet_is_connected() or similar
+            // bool connected = kmNet_is_connected(); // Hypothetical function
+            // ImGui::Text("Status: %s", connected ? "Connected" : "Disconnected");
+            // Add inputs for IP/Port if needed
+            ImGui::TextWrapped("KmboxNet selected. Ensure B-box hardware is connected and kmNet library is initialized.");
+
             ImGui::Unindent(10.0f);
         }
 

@@ -95,7 +95,7 @@ bool Config::loadConfig(const std::string& filename)
 
         // PID Controller
         // kp = 0.5;
-
+        
         // Separated X/Y PID Controllers
         kp_x = 0.5;  // 초기값은 공통 값과 동일하게 설정
         ki_x = 0.0;
@@ -110,6 +110,11 @@ bool Config::loadConfig(const std::string& filename)
         arduino_16_bit_mouse = false;
         arduino_enable_keys = false;
 
+		// KMBOX net params:
+        kmbox_ip = "192.168.2.188";
+        kmbox_port = "16896";
+        kmbox_mac = "46405c53";
+        
         // Mouse shooting
         auto_shoot = false;
         bScope_multiplier = 1.0f;
@@ -135,6 +140,7 @@ bool Config::loadConfig(const std::string& filename)
         button_pause = splitString("F3");
         button_reload_config = splitString("F4");
         button_open_overlay = splitString("Home");
+        button_disable_upward_aim = splitString("None");
 
         // Overlay
         overlay_opacity = 225;
@@ -277,6 +283,11 @@ bool Config::loadConfig(const std::string& filename)
     arduino_16_bit_mouse = get_bool("arduino_16_bit_mouse", false);
     arduino_enable_keys = get_bool("arduino_enable_keys", false);
 
+    // KMBOX config
+    kmbox_ip = ini.GetValue("KMBOX", "ip", "192.168.2.188");
+    kmbox_port = ini.GetValue("KMBOX", "port", "16896");
+    kmbox_mac = ini.GetValue("KMBOX", "mac", "46405C53");
+
     // Mouse shooting
     auto_shoot = get_bool("auto_shoot", false);
     bScope_multiplier = (float)get_double("bScope_multiplier", 1.2);
@@ -302,6 +313,7 @@ bool Config::loadConfig(const std::string& filename)
     button_pause = splitString(get_string("button_pause", "F3"));
     button_reload_config = splitString(get_string("button_reload_config", "F4"));
     button_open_overlay = splitString(get_string("button_open_overlay", "Home"));
+    button_disable_upward_aim = splitString(get_string("button_disable_upward_aim", "None"));
 
     // Overlay
     overlay_opacity = get_long("overlay_opacity", 225);
@@ -330,58 +342,18 @@ bool Config::loadConfig(const std::string& filename)
     always_on_top = get_bool("always_on_top", true);
     verbose = get_bool("verbose", false);
 
-    // Load ignore flags
-    ignore_class_0 = get_bool("ignore_class_0", false);
-    ignore_class_1 = get_bool("ignore_class_1", false);
-    ignore_class_2 = get_bool("ignore_class_2", false);
-    ignore_class_3 = get_bool("ignore_class_3", false);
-    ignore_class_4 = get_bool("ignore_class_4", false);
-    ignore_class_5 = get_bool("ignore_class_5", false);
-    ignore_class_6 = get_bool("ignore_class_6", false);
-    ignore_class_7 = get_bool("ignore_class_7", false);
-    ignore_class_8 = get_bool("ignore_class_8", false);
-    ignore_class_9 = get_bool("ignore_class_9", false);
-    ignore_class_10 = get_bool("ignore_class_10", false);
-
-    ini.SetValue("", "input_method", input_method.c_str());
-
-    // PID Controller
-    // ini.SetDoubleValue("", "kp", kp);
-    // ini.SetDoubleValue("", "ki", ki);
-    // ini.SetDoubleValue("", "kd", kd);
-
-    // Separated X/Y PID Controllers
-    ini.SetDoubleValue("", "kp_x", kp_x);
-    ini.SetDoubleValue("", "ki_x", ki_x);
-    ini.SetDoubleValue("", "kd_x", kd_x);
-    ini.SetDoubleValue("", "kp_y", kp_y);
-    ini.SetDoubleValue("", "ki_y", ki_y);
-    ini.SetDoubleValue("", "kd_y", kd_y);
-
-    // Kalman Filter settings
-    ini.SetDoubleValue("", "prediction_time_ms", prediction_time_ms);
-    ini.SetDoubleValue("", "kalman_process_noise", kalman_process_noise);
-    ini.SetDoubleValue("", "kalman_measurement_noise", kalman_measurement_noise);
-    ini.SetBoolValue("", "enable_prediction", enable_prediction); // Save prediction enable flag
-
-    // CUDA
-    ini.SetBoolValue("", "use_pinned_memory", use_pinned_memory);
-    ini.SetLongValue("", "cuda_device_id", cuda_device_id);
-
-    // Buttons
-    ini.SetValue("", "button_targeting", joinStrings(button_targeting, " ").c_str());
-
-    ini.SetDoubleValue("", "norecoil_step", norecoil_step, nullptr, true);
-    ini.SetDoubleValue("", "norecoil_ms", norecoil_ms, nullptr, true);
-
-    ini.SetDoubleValue("", "bScope_multiplier", bScope_multiplier);
-
-    // Scope Recoil Control (Save)
-    ini.SetLongValue("", "active_scope_magnification", active_scope_magnification);
-    ini.SetDoubleValue("", "recoil_mult_2x", recoil_mult_2x, nullptr, true);
-    ini.SetDoubleValue("", "recoil_mult_3x", recoil_mult_3x, nullptr, true);
-    ini.SetDoubleValue("", "recoil_mult_4x", recoil_mult_4x, nullptr, true);
-    ini.SetDoubleValue("", "recoil_mult_6x", recoil_mult_6x, nullptr, true);
+    // Load ignore flags from the correct section
+    ignore_class_0 = ini.GetBoolValue("Ignore Classes", "ignore_class_0", false);
+    ignore_class_1 = ini.GetBoolValue("Ignore Classes", "ignore_class_1", false);
+    ignore_class_2 = ini.GetBoolValue("Ignore Classes", "ignore_class_2", false);
+    ignore_class_3 = ini.GetBoolValue("Ignore Classes", "ignore_class_3", false);
+    ignore_class_4 = ini.GetBoolValue("Ignore Classes", "ignore_class_4", false);
+    ignore_class_5 = ini.GetBoolValue("Ignore Classes", "ignore_class_5", false);
+    ignore_class_6 = ini.GetBoolValue("Ignore Classes", "ignore_class_6", false);
+    ignore_class_7 = ini.GetBoolValue("Ignore Classes", "ignore_class_7", false);
+    ignore_class_8 = ini.GetBoolValue("Ignore Classes", "ignore_class_8", false);
+    ignore_class_9 = ini.GetBoolValue("Ignore Classes", "ignore_class_9", false);
+    ignore_class_10 = ini.GetBoolValue("Ignore Classes", "ignore_class_10", false);
 
     return true;
 }
@@ -504,7 +476,8 @@ bool Config::saveConfig(const std::string& filename)
         << "button_exit = " << joinStrings(button_exit) << "\n"
         << "button_pause = " << joinStrings(button_pause) << "\n"
         << "button_reload_config = " << joinStrings(button_reload_config) << "\n"
-        << "button_open_overlay = " << joinStrings(button_open_overlay) << "\n\n";
+        << "button_open_overlay = " << joinStrings(button_open_overlay) << "\n"
+        << "button_disable_upward_aim = " << joinStrings(button_disable_upward_aim) << "\n\n";
 
     // Overlay
     file << "# Overlay\n"
@@ -557,7 +530,7 @@ bool Config::saveConfig(const std::string& filename)
 std::vector<std::string> Config::listProfiles() {
     std::vector<std::string> profiles;
     std::string current_path_str = "."; // Assuming profiles are in the same directory as the executable
-
+    
     try {
         for (const auto& entry : std::filesystem::directory_iterator(current_path_str)) {
             if (entry.is_regular_file()) {
@@ -573,12 +546,12 @@ std::vector<std::string> Config::listProfiles() {
     } catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "[Config] Error listing profiles in directory '" << current_path_str << "': " << e.what() << std::endl;
     }
-
+    
     // Sort profiles alphabetically for consistency
     std::sort(profiles.begin(), profiles.end());
 
     // Optionally add a default entry if config.ini exists and you want to represent it
-    // profiles.insert(profiles.begin(), "Default");
+    // profiles.insert(profiles.begin(), "Default"); 
 
     return profiles;
 }
@@ -633,4 +606,15 @@ bool Config::deleteProfile(const std::string& profileName) {
         std::cerr << "[Config] Filesystem error while deleting profile '" << filename << "': " << e.what() << std::endl;
         return false;
     }
+}
+
+void Config::resetConfig()
+{
+    // ... existing code ...
+    button_reload_config = {"None"};
+    button_open_overlay = {"None"};
+    button_disable_upward_aim = {"None"}; // Reset the new button config
+
+    // Call saveConfig to persist the reset values
+    saveConfig();
 }

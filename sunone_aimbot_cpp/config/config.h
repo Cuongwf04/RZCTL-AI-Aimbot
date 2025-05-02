@@ -35,7 +35,10 @@ public:
     float easynorecoilstrength;
     float norecoil_step;  // Step size for adjusting norecoil strength
     float norecoil_ms;    // Millisecond delay for recoil control
-    std::string input_method = "WIN32";
+    std::string input_method; // "WIN32", "GHUB", "ARDUINO"
+
+    // Razer Input
+    // std::string razer_dll_path; // Path to rzctl.dll <-- Removed
 
     // Scope Recoil Control
     int active_scope_magnification; // 0=None, 2=2x, 3=3x, 4=4x, 6=6x
@@ -53,10 +56,16 @@ public:
     double kd_y;
 
     // Arduino
-    int arduino_baudrate = 115200;
-    std::string arduino_port = "COM3";
-    bool arduino_16_bit_mouse = false;
+    int arduino_baudrate;
+    std::string arduino_port;
+    bool arduino_16_bit_mouse;
     bool arduino_enable_keys;
+
+    // KMBOX net params:
+    std::string kmbox_ip;         
+    std::string kmbox_port;       
+    std::string kmbox_mac;    
+
 
     // Mouse shooting
     bool auto_shoot;
@@ -89,6 +98,7 @@ public:
     std::vector<std::string> button_pause;
     std::vector<std::string> button_reload_config;
     std::vector<std::string> button_open_overlay;
+    std::vector<std::string> button_disable_upward_aim;
 
     // Overlay
     int overlay_opacity;
@@ -137,6 +147,7 @@ public:
     bool saveProfile(const std::string& profileName);
     bool loadProfile(const std::string& profileName);
     bool deleteProfile(const std::string& profileName);
+    void resetConfig();
 
     std::string joinStrings(const std::vector<std::string>& vec, const std::string& delimiter = ",");
 private:
