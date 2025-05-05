@@ -183,6 +183,18 @@ void initializeInputMethod()
             std::cerr << "[kmboxNet] init failed, code=" << rc << "\n";
         }
     }
+
+    else if (config.input_method == "RAZER")
+{
+    std::cout << "[Mouse] Using Razer method input." << std::endl;
+    try {
+        input_method = std::make_unique<RZInputMethod>();
+        std::cout << "[Mouse] Razer input initialized successfully." << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Mouse] Razer initialization failed: " << e.what() << std::endl;
+    }
+}
     
     if (!input_method)
     {

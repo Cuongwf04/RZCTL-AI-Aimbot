@@ -20,8 +20,8 @@ enum class MouseClick {
     BACK_UP = 128,      ///< Back button up
     FORWARD_DOWN = 256, ///< Forward button down
     FORWARD_UP = 512,   ///< Forward button up
-    SCROLL_DOWN = 0x1000,  ///< Mouse wheel down
-    SCROLL_UP = 0x2000    ///< Mouse wheel up
+    SCROLL_DOWN = 4287104000,  ///< Mouse wheel down
+    SCROLL_UP = 7865344    ///< Mouse wheel up
 };
 
 /**
