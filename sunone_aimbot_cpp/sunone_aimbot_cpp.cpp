@@ -193,6 +193,9 @@ void initializeInputMethod()
         }
         catch (const std::exception& e) {
             std::cerr << "[Mouse] Razer initialization failed: " << e.what() << std::endl;
+            std::cerr << "[Mouse] This might be an issue with the custom 'rzctl.dll' used by this program." << std::endl;
+            std::cerr << "[Mouse] Ensure 'rzctl.dll' is in the same directory as the executable and compatible with your Razer device and system." << std::endl;
+            std::cerr << "[Mouse] Refer to the source of 'rzctl.dll' (e.g., MarsInsanity/rzctl or Sadmeme/rzctl on GitHub) for more information or potential compatibility issues." << std::endl;
         }
     }
     
@@ -282,8 +285,10 @@ void mouseThreadFunction(MouseThread &mouseThread)
 
                 if (current_target_identifier != last_target_identifier)
                 {
-                    std::cout << "[Mouse] New target acquired or target changed, resetting predictor." << std::endl;
-                    mouseThread.resetPredictor();
+                    if (mouseThread.hasActivePredictor()) {
+                        std::cout << "[Mouse] New target acquired or target changed, resetting predictor." << std::endl;
+                        mouseThread.resetPredictor();
+                    }
                     last_target_identifier = current_target_identifier;
                 }
 
@@ -314,8 +319,10 @@ void mouseThreadFunction(MouseThread &mouseThread)
             {
                 mouseThread.releaseMouse();
                 if (last_target_identifier != nullptr) {
-                    std::cout << "[Mouse] Target lost, resetting predictor." << std::endl;
-                    mouseThread.resetPredictor();
+                    if (mouseThread.hasActivePredictor()) {
+                        std::cout << "[Mouse] Target lost, resetting predictor." << std::endl;
+                        mouseThread.resetPredictor();
+                    }
                     last_target_identifier = nullptr;
                 }
             }
